@@ -158,7 +158,7 @@ export function HeroSection({ bio }: HeroSectionProps) {
         </Suspense>
       )}
 
-      Ambient glow — desktop only, CSS hides on mobile
+      {/* Ambient glow — desktop only, CSS hides on mobile */}
       <div
         className="hero-desktop-only absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 rounded-full blur-[140px] pointer-events-none z-5"
         style={{ background: "var(--hero-glow)" }}
@@ -233,19 +233,12 @@ export function HeroSection({ bio }: HeroSectionProps) {
             className="text-[20px] sm:text-[23px] font-bold uppercase tracking-[0.2em]"
             style={{ color: "var(--hero-name-color)" }}
           >
-            Tommy Ang
+            Tom Nguyen
           </p>
           <p
             className="text-[26px] sm:text-[32px] font-bold"
             style={{ fontFamily: "var(--font-display, 'Space Grotesk')" }}
           >
-            {/*
-             * Two layers, CSS-controlled:
-             * - .hero-role-static: always visible on mobile (pointer:coarse / <768px)
-             *   hidden on desktop by .hero-desktop-only sibling taking over.
-             * - TypewriterRole: only mounted after isMobile JS resolves,
-             *   hidden via CSS on mobile so there's no flash.
-             */}
             <span className="hero-role-static gradient-text">Full-Stack Developer</span>
             {!isMobile && <span className="hero-desktop-only"><TypewriterRole /></span>}
           </p>
@@ -299,7 +292,7 @@ export function HeroSection({ bio }: HeroSectionProps) {
           </Link>
         </motion.div>
 
-        {/* Scroll indicator — desktop animated, mobile static */}
+        {/* Scroll indicator */}
         {!isMobile ? (
           <motion.div
             initial={{ opacity: 0 }}

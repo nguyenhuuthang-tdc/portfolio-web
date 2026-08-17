@@ -210,7 +210,6 @@ html {
     0 0 32px rgba(139, 92, 246, 0.06);
 }
 
-/* ─── Noise texture ─── */
 .noise-bg::before {
   content: "";
   position: absolute;
@@ -221,7 +220,6 @@ html {
   z-index: 0;
 }
 
-/* ─── Dark grid background ─── */
 .dark-grid {
   background-image: linear-gradient(
       rgba(139, 92, 246, 0.04) 1px,
@@ -231,13 +229,11 @@ html {
   background-size: 64px 64px;
 }
 
-/* ─── Violet glow ─── */
 .glow-violet {
   box-shadow: 0 0 40px rgba(139, 92, 246, 0.45),
     0 0 80px rgba(99, 102, 241, 0.2);
 }
 
-/* ─── Typing cursor ─── */
 .typing-cursor {
   display: inline-block;
   width: 2px;
@@ -249,17 +245,6 @@ html {
   animation: blink 1s step-end infinite;
 }
 
-/* ─── Mobile performance ─── */
-/*
- * On touch/mobile devices, CSS blur (filter: blur / backdrop-filter) forces
- * the browser to rasterize large GPU textures on every frame.
- * A single blur(48px) on a 300px div or blur(140px) on a 600px div can
- * consume 10–30ms per frame on mobile — causing the 60fps budget to be
- * entirely consumed by rendering, leaving zero time for JS events (clicks,
- * scroll), which makes buttons appear unresponsive.
- *
- * Fix: disable ALL blur on pointer:coarse (touch) devices.
- */
 @media (pointer: coarse) {
   *,
   ::before,
@@ -268,17 +253,11 @@ html {
     -webkit-backdrop-filter: none !important;
   }
 
-  /* Also disable CSS filter:blur — applied inline via style props */
   .mobile-no-blur {
     filter: none !important;
   }
 }
 
-/* ─── Hero section — CSS-driven theme, no JS mount gate ─── */
-/*
- * MobileBg is always rendered in HTML but only visible on touch/coarse devices.
- * CSS hides it on desktop, so JS never needs to gate its rendering.
- */
 .hero-mobile-bg {
   display: none;
 }
