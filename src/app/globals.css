@@ -258,6 +258,35 @@ html {
   }
 }
 
+.hero-section {
+  background: var(--hero-bg);
+}
+
+/* Desktop dark: let the fixed galaxy show through the hero */
+@media (min-width: 768px) and (pointer: fine) {
+  .dark .hero-section {
+    background: radial-gradient(
+      ellipse 90% 70% at 50% 42%,
+      rgba(76, 29, 149, 0.22) 0%,
+      rgba(10, 10, 18, 0.2) 48%,
+      transparent 74%
+    );
+  }
+  .dark .page-grid {
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.022) 1px,
+      transparent 1px
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dark .hero-section {
+    background: var(--hero-bg);
+  }
+}
+
 .hero-mobile-bg {
   display: none;
 }
@@ -269,6 +298,15 @@ html {
 @media (pointer: fine) and (min-width: 768px) {
   .hero-role-static {
     display: none;
+  }
+  /* Galaxy spans hero → about; fade would cut the field */
+  .dark .hero-bottom-fade {
+    display: none;
+  }
+}
+@media (pointer: fine) and (min-width: 768px) and (prefers-reduced-motion: reduce) {
+  .dark .hero-bottom-fade {
+    display: block;
   }
 }
 @media (pointer: coarse), (max-width: 767px) {

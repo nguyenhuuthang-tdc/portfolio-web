@@ -3,6 +3,7 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
 const HeroScene = lazy(() =>
   import("@/components/three/HeroScene").then((m) => ({
@@ -115,16 +116,22 @@ export function HeroSection({ bio }: HeroSectionProps) {
    * Default false is fine: SSR renders desktop layout, CSS corrects on mobile
    * without a flash because MobileBg visibility is pure CSS.
    */
+  const { resolvedTheme } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     const mobile =
       window.innerWidth < 768 ||
       window.matchMedia("(pointer: coarse)").matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     const rafId = requestAnimationFrame(() => {
       setIsMobile(mobile);
+      setReducedMotion(reduced);
       /*
        * 200ms on mobile: gives the browser one paint cycle to render
        * MobileBg + hero content before Three.js starts initialising.
@@ -137,6 +144,14 @@ export function HeroSection({ bio }: HeroSectionProps) {
   }, []);
 
   /*
+   * Desktop dark: particle galaxy (GalaxyBackground) — skip the sphere.
+   * Mobile / light / reduced-motion: keep the morphing icosahedron.
+   */
+  const showSphere =
+    sceneReady &&
+    (isMobile || resolvedTheme === "light" || reducedMotion);
+
+  /*
    * resolvedTheme is available immediately after hydration because next-themes
    * injects a blocking inline script that sets the .dark class before React
    * renders. We no longer gate on `mounted` — CSS variables driven by the
@@ -146,13 +161,12 @@ export function HeroSection({ bio }: HeroSectionProps) {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "var(--hero-bg)" }}
+      className="hero-section relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
     >
       {/* MobileBg always in DOM — CSS shows it only on mobile/touch */}
       <MobileBg />
 
-      {sceneReady && (
+      {showSphere && (
         <Suspense fallback={null}>
           <HeroScene mobile={isMobile} />
         </Suspense>
@@ -164,9 +178,9 @@ export function HeroSection({ bio }: HeroSectionProps) {
         style={{ background: "var(--hero-glow)" }}
       />
 
-      {/* Bottom fade */}
+      {/* Bottom fade — mobile always; desktop light only (desktop dark uses galaxy) */}
       <div
-        className="absolute inset-x-0 bottom-0 pointer-events-none z-10"
+        className="hero-bottom-fade absolute inset-x-0 bottom-0 pointer-events-none z-10"
         style={{
           height: "var(--hero-fade-h)",
           background: "var(--hero-fade)",

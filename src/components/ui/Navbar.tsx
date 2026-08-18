@@ -288,6 +288,14 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
+            onClick={(e) => {
+              if (pathname !== "/") return;
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              if (window.location.hash) {
+                history.replaceState(null, "", "/");
+              }
+            }}
             className="flex items-baseline gap-0.5 leading-none"
             style={{ fontFamily: "var(--font-display, 'Space Grotesk')" }}
           >
