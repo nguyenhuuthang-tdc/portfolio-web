@@ -7,6 +7,12 @@ export function mediaUrl(src: string | null | undefined): string | null {
   if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("data:")) {
     return src;
   }
+
+  // Files outside the upload namespace are local assets served from /public.
+  if (!src.startsWith("/uploads/") && !src.startsWith("uploads/")) {
+    return src.startsWith("/") ? src : `/${src}`;
+  }
+
   const base = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "";
   return `${base}${src.startsWith("/") ? src : `/${src}`}`;
 }

@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getProjectBySlug, getProjects } from "@/lib/content/projects";
+import {
+  getProjectBySlug,
+  getProjectMdxComponent,
+  getProjects,
+} from "@/lib/content/projects";
 
 export const revalidate = 3600;
 
@@ -28,6 +32,7 @@ export default async function ProjectDetailPage({
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project || !project.hasDetail) notFound();
+  const ProjectContent = await getProjectMdxComponent(slug);
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6">
@@ -114,13 +119,17 @@ export default async function ProjectDetailPage({
           </div>
         )}
 
-        {/* Detail content */}
-        {project.detailContent && (
+        {/* API HTML takes priority; local projects fall back to compiled MDX. */}
+        {project.detailContent ? (
           <div
             className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-bold prose-code:font-mono prose-code:text-violet-600 dark:prose-code:text-violet-400"
             dangerouslySetInnerHTML={{ __html: project.detailContent }}
           />
-        )}
+        ) : ProjectContent ? (
+          <article className="max-w-none">
+            <ProjectContent />
+          </article>
+        ) : null}
       </div>
     </div>
   );

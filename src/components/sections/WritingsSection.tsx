@@ -29,7 +29,7 @@ export function WritingsSection({ posts }: WritingsSectionProps) {
             </div>
             <Link
               href="/writings"
-              className="flex items-center gap-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors group"
+              className="flex items-center gap-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors group whitespace-nowrap"
             >
               All writings
               <svg

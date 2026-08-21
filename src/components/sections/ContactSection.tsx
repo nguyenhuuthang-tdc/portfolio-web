@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { SectionReveal } from "@/components/ui/SectionReveal";
+import { RiSendPlaneFill, RiUserLocationFill } from "react-icons/ri";
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
@@ -55,7 +56,7 @@ export function ContactSection() {
                 <br />
                 together.
               </h2>
-              <p className="text-neutral-500 dark:text-neutral-400 leading-relaxed mb-8 max-w-sm">
+              <p className="text-neutral-600 dark:text-neutral-100 leading-relaxed mb-8 max-w-sm">
                 Have a project in mind, an opportunity to discuss, or just want
                 to say hi? I&apos;d love to hear from you.
               </p>
@@ -63,8 +64,8 @@ export function ContactSection() {
               {/* Contact info */}
               <div className="space-y-4">
                 {[
-                  { icon: "✉️", label: "Email", value: "nguyenhuuthang1609@gmail.com" },
-                  { icon: "📍", label: "Location", value: "Vietnam" },
+                  { icon: <RiSendPlaneFill />, label: "Email", value: "nguyenhuuthang1609@gmail.com" },
+                  { icon: <RiUserLocationFill />, label: "Location", value: "Vietnam" },
                 ].map((item) => (
                   <div
                     key={item.label}

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">First Scene</title>
+  <desc id="desc">An abstract developer terminal announcing the first portfolio writing.</desc>
+  <defs>
+
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(1135 260) rotate(145) scale(590 460)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="420" y1="0" x2="1180" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="30" stdDeviation="35" flood-color="#000" flood-opacity=".48"/>
+    </filter>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#C4B5FD" stroke-opacity=".06"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" rx="44" fill="url(#bg)"/>
+  <rect width="1600" height="900" rx="44" fill="url(#glow)"/>
+  <rect width="1600" height="900" rx="44" fill="url(#grid)"/>
+  <g filter="url(#shadow)">
+    <rect x="235" y="155" width="1130" height="590" rx="28" fill="#0C0A16" fill-opacity=".9" stroke="#A78BFA" stroke-opacity=".22" stroke-width="2"/>
+    <path d="M235 227H1365" stroke="#A78BFA" stroke-opacity=".18" stroke-width="2"/>
+    <circle cx="281" cy="191" r="9" fill="#FB7185"/>
+    <circle cx="316" cy="191" r="9" fill="#FBBF24"/>
+    <circle cx="351" cy="191" r="9" fill="#4ADE80"/>
+    <text x="800" y="198" fill="#A3A3A3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="19" text-anchor="middle">~/portfolio/writings</text>
+  </g>
+  <text x="315" y="330" fill="#A78BFA" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="25">$ npm run write:first</text>
+  <text x="315" y="405" fill="#F5F3FF" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="750" letter-spacing="-3">FIRST SCENE</text>
+  <rect x="315" y="442" width="730" height="5" rx="2.5" fill="url(#line)"/>
+  <text x="315" y="520" fill="#C4B5FD" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="25">const status = "started";</text>
+  <text x="315" y="575" fill="#67E8F9" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="25">git commit -m "stop waiting, start building"</text>
+  <text x="315" y="650" fill="#737373" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">portfolio / notes / ideas / lessons learned</text>
+  <rect x="315" y="683" width="15" height="27" rx="2" fill="#A78BFA">
+    <animate attributeName="opacity" values="1;.15;1" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+</svg>

@@ -4,7 +4,7 @@ import { mediaUrl } from "@/lib/media";
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  return new Date(dateStr).toLocaleDateString("vi-VN", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -13,7 +13,7 @@ function formatDate(dateStr: string | null): string {
 
 function readingTime(content: string): string {
   const words = content.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
-  return `${Math.max(1, Math.round(words / 200))} min`;
+  return `${Math.max(1, Math.round(words / 200))} minute`;
 }
 
 type WritingCardProps = {

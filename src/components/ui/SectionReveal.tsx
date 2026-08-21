@@ -41,6 +41,7 @@ export function SectionReveal({
    */
   const isInView = useInView(ref, { once, margin: "-60px" });
   const { x, y } = directionOffset[direction];
+  const isHorizontal = direction === "left" || direction === "right";
 
   return (
     <motion.div
@@ -56,7 +57,7 @@ export function SectionReveal({
         delay,
         ease: [0.16, 1, 0.3, 1],
       }}
-      className={className}
+      className={`${isHorizontal ? "section-reveal-horizontal" : ""} ${className}`.trim()}
     >
       {children}
     </motion.div>

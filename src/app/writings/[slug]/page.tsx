@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getBlogBySlug, getBlogPosts } from "@/lib/content/blogs";
+import { getBlogBySlug, getBlogDetail, getBlogPosts } from "@/lib/content/blogs";
 import { Blog } from "@/types/api";
 import { ViewTracker } from "./ViewTracker";
 import { mediaUrl } from "@/lib/media";
@@ -37,7 +37,7 @@ function formatDate(dateStr: string | null): string {
 function readingTime(content: string): string {
   const words = content.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
   const mins = Math.max(1, Math.round(words / 200));
-  return `${mins} min read`;
+  return `${mins} min${mins > 1 ? 's' : ''} read`;
 }
 
 /* ── Related posts card ── */
@@ -74,8 +74,9 @@ export default async function WritingDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getBlogBySlug(slug);
-  if (!post) notFound();
+  const detail = await getBlogDetail(slug);
+  if (!detail) notFound();
+  const { post, MdxContent } = detail;
 
   // Related posts: same categories, excluding current
   const categorySlug = post.categories[0]?.slug;
@@ -98,7 +99,7 @@ export default async function WritingDetailPage({
 
   return (
     <div className="min-h-screen pt-20 pb-16">
-      <ViewTracker blogId={post.id} />
+      {!MdxContent && <ViewTracker blogId={post.id} />}
 
       {/* Hero / Thumbnail */}
       {mediaUrl(post.thumbnail) ? (
@@ -164,28 +165,34 @@ export default async function WritingDetailPage({
                   <span className="text-neutral-300 dark:text-neutral-700">·</span>
                   <span>{readingTime(post.content)}</span>
                   <span className="text-neutral-300 dark:text-neutral-700">·</span>
-                  <span className="flex items-center gap-1.5">
+                  {/* <span className="flex items-center gap-1.5">
                     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                     {post.viewCount.toLocaleString()} views
-                  </span>
+                  </span> */}
                 </div>
               </header>
 
-              {/* Content */}
-              <div
-                className="prose prose-neutral dark:prose-invert max-w-none
-                  prose-headings:font-bold prose-headings:tracking-tight
-                  prose-a:text-violet-600 dark:prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline
-                  prose-code:font-mono prose-code:text-violet-600 dark:prose-code:text-violet-400
-                  prose-code:bg-violet-50 dark:prose-code:bg-violet-950/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                  prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-950 prose-pre:border prose-pre:border-neutral-800
-                  prose-img:rounded-xl prose-img:shadow-md
-                  prose-blockquote:border-violet-400 dark:prose-blockquote:border-violet-600"
-                dangerouslySetInnerHTML={{ __html: post.content }}
-              />
+              {/* API articles use HTML; local articles are compiled MDX components. */}
+              {MdxContent ? (
+                <div className="max-w-none">
+                  <MdxContent />
+                </div>
+              ) : (
+                <div
+                  className="prose prose-neutral dark:prose-invert max-w-none
+                    prose-headings:font-bold prose-headings:tracking-tight
+                    prose-a:text-violet-600 dark:prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline
+                    prose-code:font-mono prose-code:text-violet-600 dark:prose-code:text-violet-400
+                    prose-code:bg-violet-50 dark:prose-code:bg-violet-950/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+                    prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-950 prose-pre:border prose-pre:border-neutral-800
+                    prose-img:rounded-xl prose-img:shadow-md
+                    prose-blockquote:border-violet-400 dark:prose-blockquote:border-violet-600"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              )}
 
               {/* Tags */}
               {post.categories.length > 0 && (

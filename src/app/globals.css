@@ -14,6 +14,20 @@
 }
 
 /* ─── Fonts ─── */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
 body {
   font-family: var(--font-sans, "Plus Jakarta Sans"), ui-sans-serif, system-ui,
     -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -23,6 +37,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   /* Plain body bg — dot-grid applied only to content below hero via .page-grid */
   background-color: #f9fafb;
+}
+
+/*
+ * A translated full-width reveal contributes to the page's scrollable width
+ * even while it is transparent. Keep horizontal reveals on desktop, but use
+ * an opacity-only reveal on mobile so the root viewport never grows sideways.
+ */
+@media (max-width: 767px) {
+  .section-reveal-horizontal {
+    transform: none !important;
+  }
 }
 
 .dark body {

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { Navbar } from "@/components/ui/Navbar";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
+import { Footer } from "@/components/ui/Footer";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "Winphony — Software Developer",
   description:
     "Personal portfolio of a full-stack developer. Projects, writings, and more.",
@@ -52,6 +54,7 @@ export default function RootLayout({
         <ThemeProvider>
           <Navbar />
           <main>{children}</main>
+		  <Footer />
           <ScrollToTop />
         </ThemeProvider>
       </body>

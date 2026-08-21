@@ -261,7 +261,7 @@ export function HeroSection({ bio }: HeroSectionProps) {
         {/* Bio */}
         <motion.p
           className="text-[17px] sm:text-[18px] max-w-lg mx-auto mb-10 leading-relaxed"
-          style={{ color: "var(--hero-bio-color)" }}
+          style={{ color: "var(--hero-name-color)" }}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.42 }}

@@ -20,7 +20,6 @@ try {
 }
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["10.10.99.110"],
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   images: {
     remotePatterns: [

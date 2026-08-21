@@ -1,49 +1,62 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
-import { Blog, BlogCategory, PaginatedResponse } from '@/types/api';
+import type { ComponentType } from 'react';
+import type { Blog, BlogCategory, PaginatedResponse } from '@/types/api';
 import { apiFetch } from '@/lib/api/client';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/writings');
 
-// --- Local MDX fallback ---
+type BlogMdxModule = {
+  default: ComponentType;
+  metadata: Omit<Blog, 'content'>;
+};
 
-function getLocalPosts(): Blog[] {
+export type BlogDetail = {
+  post: Blog;
+  MdxContent: ComponentType | null;
+};
+
+function getLocalBlogSlugs(): string[] {
   if (!fs.existsSync(CONTENT_DIR)) return [];
 
   return fs
     .readdirSync(CONTENT_DIR)
-    .filter((f) => f.endsWith('.mdx') || f.endsWith('.md'))
-    .map((filename) => {
-      const raw = fs.readFileSync(path.join(CONTENT_DIR, filename), 'utf-8');
-      const { data, content } = matter(raw);
-      return {
-        id: data.id ?? 0,
-        title: data.title ?? filename.replace(/\.(mdx|md)$/, ''),
-        slug: data.slug ?? filename.replace(/\.(mdx|md)$/, ''),
-        content,
-        excerpt: data.excerpt ?? null,
-        thumbnail: data.thumbnail ?? null,
-        status: 'published' as const,
-        viewCount: data.viewCount ?? 0,
-        publishedAt: data.publishedAt ?? null,
-        categories: data.categories ?? [],
-        createdAt: data.createdAt ?? new Date().toISOString(),
-        updatedAt: data.updatedAt ?? new Date().toISOString(),
-      };
-    })
+    .filter((filename) => filename.endsWith('.mdx'))
+    .map((filename) => filename.replace(/\.mdx$/, ''));
+}
+
+async function importLocalBlog(slug: string): Promise<BlogMdxModule> {
+  return import(`../../../content/writings/${slug}.mdx`) as Promise<BlogMdxModule>;
+}
+
+async function loadLocalBlog(slug: string): Promise<BlogMdxModule | null> {
+  if (!getLocalBlogSlugs().includes(slug)) return null;
+  return importLocalBlog(slug);
+}
+
+function toBlog(metadata: BlogMdxModule['metadata'], slug: string): Blog {
+  const source = fs.readFileSync(path.join(CONTENT_DIR, `${slug}.mdx`), 'utf-8');
+  return { ...metadata, content: source };
+}
+
+async function getLocalPosts(): Promise<Blog[]> {
+  const slugs = getLocalBlogSlugs();
+  const modules = await Promise.all(slugs.map(importLocalBlog));
+
+  return modules
+    .map(({ metadata }, index) => toBlog(metadata, slugs[index]))
+    .filter((post) => post.status === 'published')
     .sort((a, b) => {
       if (!a.publishedAt || !b.publishedAt) return 0;
       return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
     });
 }
 
-function getLocalPostBySlug(slug: string): Blog | null {
-  const posts = getLocalPosts();
-  return posts.find((p) => p.slug === slug) ?? null;
+function uniqueCategories(posts: Blog[]): BlogCategory[] {
+  return Array.from(
+    new Map(posts.flatMap((post) => post.categories).map((category) => [category.slug, category])).values()
+  );
 }
-
-// --- Public API ---
 
 export async function getBlogPosts(params?: {
   page?: number;
@@ -58,14 +71,9 @@ export async function getBlogPosts(params?: {
         limit: String(params?.limit ?? 10),
         ...(params?.category ? { category: params.category } : {}),
       });
-
-	  console.log(qs.toString());
-
       const res = await apiFetch<PaginatedResponse<Blog>>(`/api/blogs?${qs}`, {
         revalidate: 3600,
       });
-
-      console.log(res);
 
       return {
         posts: res.data,
@@ -75,21 +83,20 @@ export async function getBlogPosts(params?: {
         totalPages: res.pagination.totalPages,
       };
     } catch {
-      // fall through to local
+      // fall through to local MDX
     }
   }
 
-  const all = getLocalPosts();
+  const all = await getLocalPosts();
   const filtered = params?.category
-    ? all.filter((p) => p.categories.some((c) => c.slug === params.category))
+    ? all.filter((post) => post.categories.some((category) => category.slug === params.category))
     : all;
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 10;
   const start = (page - 1) * limit;
-  const posts = filtered.slice(start, start + limit);
 
   return {
-    posts,
+    posts: filtered.slice(start, start + limit),
     total: filtered.length,
     page,
     limit,
@@ -97,20 +104,30 @@ export async function getBlogPosts(params?: {
   };
 }
 
-export async function getBlogBySlug(slug: string): Promise<Blog | null> {
+export async function getBlogDetail(slug: string): Promise<BlogDetail | null> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: Blog }>(
         `/api/blogs/slug/${slug}`,
         { revalidate: 3600 }
       );
-      return res.data;
+      return { post: res.data, MdxContent: null };
     } catch {
-      // fall through
+      // fall through to local MDX
     }
   }
 
-  return getLocalPostBySlug(slug);
+  const blogModule = await loadLocalBlog(slug);
+  if (!blogModule) return null;
+
+  return {
+    post: toBlog(blogModule.metadata, slug),
+    MdxContent: blogModule.default,
+  };
+}
+
+export async function getBlogBySlug(slug: string): Promise<Blog | null> {
+  return (await getBlogDetail(slug))?.post ?? null;
 }
 
 export async function getBlogCategories(): Promise<BlogCategory[]> {
@@ -122,10 +139,11 @@ export async function getBlogCategories(): Promise<BlogCategory[]> {
       );
       return res.data;
     } catch {
-      // fall through
+      // fall through to local MDX
     }
   }
-  return [];
+
+  return uniqueCategories(await getLocalPosts());
 }
 
 export async function recordBlogView(blogId: number): Promise<void> {

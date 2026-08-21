@@ -67,10 +67,10 @@ export function WritingsFeed({
             disabled={loading}
             className="px-5 py-2.5 rounded-full text-sm font-medium border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-violet-400 dark:hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400 disabled:opacity-50 transition-colors"
           >
-            {loading ? "Loading…" : "Load more"}
+            {loading ? "Đang tải…" : "Xem thêm"}
           </button>
           {error && (
-            <p className="text-xs text-red-500">Couldn’t load more. Try again.</p>
+            <p className="text-xs text-red-500">Không thể tải thêm. Vui lòng thử lại.</p>
           )}
         </div>
       )}
