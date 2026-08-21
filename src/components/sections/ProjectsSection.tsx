@@ -115,7 +115,7 @@ function ProjectCard({ project, index, featured }: { project: ProcessedProject; 
 
   return (
     <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-sm transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-500/[0.06] dark:border-neutral-800/80 dark:bg-neutral-950/80 dark:hover:border-violet-700/60 ${
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-sm transition-[translate,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-500/6 dark:border-neutral-800/80 dark:bg-neutral-950/80 dark:hover:border-violet-700/60 ${
         featured ? "md:col-span-2 sm:p-8" : ""
       }`}
     >
