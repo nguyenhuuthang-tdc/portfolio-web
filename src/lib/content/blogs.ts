@@ -108,7 +108,7 @@ export async function getBlogDetail(slug: string): Promise<BlogDetail | null> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: Blog }>(
-        `/api/blogs/slug/${slug}`,
+        `/api/blogs/slug/${encodeURIComponent(slug)}`,
         { revalidate: 3600 }
       );
       return { post: res.data, MdxContent: null };

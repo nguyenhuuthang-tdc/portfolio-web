@@ -4,6 +4,7 @@ import { getBlogBySlug, getBlogDetail, getBlogPosts } from "@/lib/content/blogs"
 import { Blog } from "@/types/api";
 import { ViewTracker } from "./ViewTracker";
 import { mediaUrl } from "@/lib/media";
+import { CmsMarkdown } from "@/components/article/CmsMarkdown";
 
 export const revalidate = 3600;
 
@@ -175,23 +176,12 @@ export default async function WritingDetailPage({
                 </div>
               </header>
 
-              {/* API articles use HTML; local articles are compiled MDX components. */}
               {MdxContent ? (
                 <div className="max-w-none">
                   <MdxContent />
                 </div>
               ) : (
-                <div
-                  className="prose prose-neutral dark:prose-invert max-w-none
-                    prose-headings:font-bold prose-headings:tracking-tight
-                    prose-a:text-violet-600 dark:prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline
-                    prose-code:font-mono prose-code:text-violet-600 dark:prose-code:text-violet-400
-                    prose-code:bg-violet-50 dark:prose-code:bg-violet-950/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                    prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-950 prose-pre:border prose-pre:border-neutral-800
-                    prose-img:rounded-xl prose-img:shadow-md
-                    prose-blockquote:border-violet-400 dark:prose-blockquote:border-violet-600"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                <CmsMarkdown>{post.content}</CmsMarkdown>
               )}
 
               {/* Tags */}

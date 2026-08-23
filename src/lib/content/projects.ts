@@ -62,7 +62,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: Project }>(
-        `/api/projects/slug/${slug}`,
+        `/api/projects/slug/${encodeURIComponent(slug)}`,
         { revalidate: 3600 }
       );
       return res.data;

@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import {
   getProjectBySlug,
   getProjectMdxComponent,
   getProjects,
 } from "@/lib/content/projects";
+import { CmsMarkdown } from "@/components/article/CmsMarkdown";
 
 export const revalidate = 3600;
 
@@ -107,24 +107,8 @@ export default async function ProjectDetailPage({
           </div>
         </header>
 
-        {/* Thumbnail */}
-        {project.thumbnail && (
-          <div className="relative w-full h-64 sm:h-80 rounded-2xl overflow-hidden mb-8 border border-neutral-200 dark:border-neutral-800">
-            <Image
-              src={project.thumbnail}
-              alt={project.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-        )}
-
-        {/* API HTML takes priority; local projects fall back to compiled MDX. */}
         {project.detailContent ? (
-          <div
-            className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-bold prose-code:font-mono prose-code:text-violet-600 dark:prose-code:text-violet-400"
-            dangerouslySetInnerHTML={{ __html: project.detailContent }}
-          />
+          <CmsMarkdown>{project.detailContent}</CmsMarkdown>
         ) : ProjectContent ? (
           <article className="max-w-none">
             <ProjectContent />

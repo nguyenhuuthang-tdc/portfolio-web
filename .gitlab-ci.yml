@@ -1,0 +1,25 @@
+# Daily CMS → MDX sync. Create a schedule in GitLab:
+# CI/CD → Schedules → interval (e.g. 0 17 * * *) → target branch.
+# CI/CD variables: CMS_API_URL, GITLAB_SYNC_TOKEN (write_repository).
+
+sync:cms:
+  stage: build
+  image: node:22-bookworm
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $CMS_API_URL
+    - if: $CI_PIPELINE_SOURCE == "web" && $CMS_API_URL
+  before_script:
+    - git config user.email "cms-sync@noreply.gitlab"
+    - git config user.name "cms-sync"
+    - git checkout -B "$CI_COMMIT_REF_NAME"
+  script:
+    - npm ci
+    - npm run sync:cms
+    - git add content/writings content/projects content/.sync-state.json public/images/writings
+    - |
+      if git diff --cached --quiet; then
+        echo "No CMS changes"
+        exit 0
+      fi
+    - git commit -m "sync: CMS writings and projects"
+    - git push "https://oauth2:${GITLAB_SYNC_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${CI_COMMIT_REF_NAME}"
