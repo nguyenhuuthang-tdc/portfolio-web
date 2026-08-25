@@ -3,10 +3,16 @@ import Link from "next/link";
 import {
   getProjectBySlug,
   getProjectMdxComponent,
+  getProjects,
 } from "@/lib/content/projects";
 import { CmsMarkdown } from "@/components/article/CmsMarkdown";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const projects = await getProjects();
+  return projects.filter((p) => p.hasDetail).map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

@@ -1,13 +1,18 @@
 const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  options?: RequestInit & { revalidate?: number | false }
+): Promise<T> {
+  const { revalidate, ...fetchOptions } = options ?? {};
+
   const res = await fetch(`${API_URL}${path}`, {
-    ...options,
+    ...fetchOptions,
     headers: {
       'Content-Type': 'application/json',
-      ...options?.headers,
+      ...fetchOptions.headers,
     },
-    cache: 'no-store',
+    next: revalidate !== undefined ? { revalidate } : { revalidate: 3600 },
   });
 
   if (!res.ok) {

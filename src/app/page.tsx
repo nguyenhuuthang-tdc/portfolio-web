@@ -9,7 +9,7 @@ import { getAboutSection, getSkills } from "@/lib/content/about";
 import { getProjects } from "@/lib/content/projects";
 import { getBlogPosts } from "@/lib/content/blogs";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const [bio, aboutMe, skills, projects, { posts }] = await Promise.all([
