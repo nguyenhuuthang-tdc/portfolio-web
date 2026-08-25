@@ -1,9 +1,13 @@
+stages:
+  - sync
+  - production
+
 # Daily CMS → MDX sync. Create a schedule in GitLab:
 # CI/CD → Schedules → interval (e.g. 0 17 * * *) → target branch.
 # CI/CD variables: CMS_API_URL, GITLAB_SYNC_TOKEN (write_repository).
 
 sync:cms:
-  stage: build
+  stage: sync
   image: node:22-bookworm
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $CMS_API_URL
@@ -15,7 +19,7 @@ sync:cms:
   script:
     - npm ci
     - npm run sync:cms
-    - git add content/writings content/projects content/.sync-state.json public/images/writings
+    - git add content/writings content/projects content/.sync-state.json public/images/writings public/images/projects
     - |
       if git diff --cached --quiet; then
         echo "No CMS changes"
@@ -23,3 +27,27 @@ sync:cms:
       fi
     - git commit -m "sync: CMS writings and projects"
     - git push "https://oauth2:${GITLAB_SYNC_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${CI_COMMIT_REF_NAME}"
+
+# build job
+build-production:
+  stage: production
+  tags:
+    - vps
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+  variables:
+    DOCKER_IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE
+    DOCKER_CONTAINER_NAME: portfolio-web
+    TARGET_DIR: /home/tom/services/porfolio/porfolio-web
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - chmod u+x ./scripts/build.sh ./scripts/run.sh
+    - ./scripts/build.sh
+    - mkdir -p "${TARGET_DIR}"
+    - cp docker-compose.yml "${TARGET_DIR}/docker-compose.yml"
+    - ./scripts/run.sh

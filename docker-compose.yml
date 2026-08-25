@@ -1,0 +1,24 @@
+# Local: copy .env.example → .env, then docker compose up --build
+# VPS: CI copies this file to TARGET_DIR, pull image SHA, up --no-build
+# Do not COPY .env into the image. Build uses secret web_env; run uses env_file.
+services:
+  portfolio-web:
+    container_name: portfolio-web
+    image: ${DOCKER_IMAGE_NAME:-portfolio-web}:${DOCKER_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      secrets:
+        - web_env
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      HOSTNAME: 0.0.0.0
+      PORT: ${PORT:-3000}
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+
+secrets:
+  web_env:
+    file: .env
