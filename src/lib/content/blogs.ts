@@ -74,6 +74,7 @@ export async function getBlogPosts(params?: {
       const res = await apiFetch<PaginatedResponse<Blog>>(`/api/blogs?${qs}`, {
         revalidate: 3600,
       });
+	  console.log(res.data);
 
       return {
         posts: res.data,
