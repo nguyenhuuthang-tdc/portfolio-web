@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = path.resolve(__dirname, '..');
 const WRITINGS_DIR = path.join(WEB_ROOT, 'content/writings');
 const PROJECTS_DIR = path.join(WEB_ROOT, 'content/projects');
-const IMAGES_ROOT = path.join(WEB_ROOT, 'public/images/writings');
+const IMAGES_ROOT = path.join(WEB_ROOT, 'public/images');
 const STATE_PATH = path.join(WEB_ROOT, 'content/.sync-state.json');
 
 const API = (process.env.CMS_API_URL || process.env.API_URL || 'http://localhost:4000').replace(
@@ -68,9 +68,21 @@ async function apiGet(pathname) {
 
 function resolveMediaUrl(src) {
   if (!src) return null;
-  if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) return src;
+  if (src.startsWith('data:')) return null;
   if (src.startsWith('/images/')) return null;
+
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    try {
+      const parsed = new URL(src);
+      if (parsed.pathname.startsWith('/uploads/')) return `${API}${parsed.pathname}`;
+      return src;
+    } catch {
+      return src;
+    }
+  }
+
   const pathName = src.startsWith('/') ? src : `/${src}`;
+  if (!pathName.startsWith('/uploads/')) return null;
   return `${API}${pathName}`;
 }
 
@@ -111,8 +123,8 @@ async function download(url, dest) {
   fs.writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
 }
 
-async function materializeImages(slug, markdown, thumbnail) {
-  const dir = path.join(IMAGES_ROOT, slug);
+async function materializeImages(kind, slug, markdown, thumbnail) {
+  const dir = path.join(IMAGES_ROOT, kind, slug);
   fs.mkdirSync(dir, { recursive: true });
   let nextBody = markdown;
   let nextThumb = thumbnail ?? null;
@@ -122,7 +134,7 @@ async function materializeImages(slug, markdown, thumbnail) {
     const ext = extFromUrl(thumbUrl, 'webp');
     const filename = `thumbnail.${ext}`;
     await download(thumbUrl, path.join(dir, filename));
-    nextThumb = `/images/writings/${slug}/${filename}`;
+    nextThumb = `/images/${kind}/${slug}/${filename}`;
   } else if (thumbnail?.startsWith('/images/')) {
     nextThumb = thumbnail;
   }
@@ -134,7 +146,7 @@ async function materializeImages(slug, markdown, thumbnail) {
     const ext = extFromUrl(url, 'webp');
     const filename = `${hash(url).slice(0, 8)}-${safeBase(url)}.${ext}`;
     await download(url, path.join(dir, filename));
-    const local = `/images/writings/${slug}/${filename}`;
+    const local = `/images/${kind}/${slug}/${filename}`;
     seen.set(raw, local);
     nextBody = nextBody.split(raw).join(local);
     // Surrounding HTML attrs (width, data-align) stay on the same <img> tag.
@@ -201,7 +213,7 @@ async function syncWritings(state) {
 
     const { data: post } = await apiGet(`/api/blogs/slug/${encodeURIComponent(item.slug)}`);
     const { body, thumbnail } = stale
-      ? await materializeImages(post.slug, post.content || '', post.thumbnail)
+      ? await materializeImages('writings', post.slug, post.content || '', post.thumbnail)
       : { body: extractBody(path.join(WRITINGS_DIR, `${item.slug}.mdx`)) || post.content || '', thumbnail: prev?.thumbnail };
     const contentHash = hash(body);
     if (!stale && prev?.contentHash === contentHash && !catalogChanged) continue;
@@ -220,7 +232,7 @@ async function syncWritings(state) {
   for (const slug of Object.keys(state.writings)) {
     if (remoteSlugs.has(slug)) continue;
     fs.rmSync(path.join(WRITINGS_DIR, `${slug}.mdx`), { force: true });
-    fs.rmSync(path.join(IMAGES_ROOT, slug), { recursive: true, force: true });
+    fs.rmSync(path.join(IMAGES_ROOT, 'writings', slug), { recursive: true, force: true });
     delete state.writings[slug];
     changed += 1;
     console.log(`– removed writing ${slug}`);
@@ -257,7 +269,7 @@ async function syncProjects(state) {
     if (prev && prev.updatedAt === updatedAt) continue;
 
     const { data: project } = await apiGet(`/api/projects/slug/${encodeURIComponent(item.slug)}`);
-    const body = (project.detailContent || '').trim();
+    const { body } = await materializeImages('projects', project.slug, project.detailContent || '', null);
     const contentHash = hash(body);
     if (prev && prev.contentHash === contentHash && prev.updatedAt === updatedAt) continue;
 
@@ -270,6 +282,7 @@ async function syncProjects(state) {
   for (const slug of Object.keys(state.projects)) {
     if (remoteSlugs.has(slug)) continue;
     fs.rmSync(path.join(PROJECTS_DIR, `${slug}.mdx`), { force: true });
+    fs.rmSync(path.join(IMAGES_ROOT, 'projects', slug), { recursive: true, force: true });
     delete state.projects[slug];
     changed += 1;
     console.log(`– removed project ${slug}`);

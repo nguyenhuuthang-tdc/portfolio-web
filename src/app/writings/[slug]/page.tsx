@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${post.title} — Winphony`,
     description: post.excerpt ?? undefined,
     openGraph: post.thumbnail
-      ? { images: [{ url: post.thumbnail }] }
+      ? { images: [{ url: mediaUrl(post.thumbnail) ?? post.thumbnail }] }
       : undefined,
   };
 }
