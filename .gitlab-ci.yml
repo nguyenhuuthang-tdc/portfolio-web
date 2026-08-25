@@ -20,13 +20,9 @@ sync:cms:
     - npm ci
     - npm run sync:cms
     - git add content/writings content/projects content/.sync-state.json public/images/writings public/images/projects
-    - |
-      if git diff --cached --quiet; then
-        echo "No CMS changes"
-        exit 0
-      fi
-    - git commit -m "sync: CMS writings and projects"
-    - git push "https://oauth2:${GITLAB_SYNC_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${CI_COMMIT_REF_NAME}"
+    - if git diff --cached --quiet; then echo "No CMS changes"; exit 0; fi
+    - 'git commit -m "sync CMS writings and projects"'
+    - 'git push "https://oauth2:${GITLAB_SYNC_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${CI_COMMIT_REF_NAME}"'
 
 # build job
 build-production:
