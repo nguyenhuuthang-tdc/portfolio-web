@@ -4,7 +4,7 @@ export async function apiFetch<T>(
   path: string,
   options?: RequestInit & { revalidate?: number | false }
 ): Promise<T> {
-  const { revalidate, ...fetchOptions } = options ?? {};
+  const { ...fetchOptions } = options ?? {};
 
   const res = await fetch(`${API_URL}${path}`, {
     ...fetchOptions,
@@ -12,7 +12,7 @@ export async function apiFetch<T>(
       'Content-Type': 'application/json',
       ...fetchOptions.headers,
     },
-    next: revalidate !== undefined ? { revalidate } : { revalidate: 3600 },
+    cache: "no-store",
   });
 
   if (!res.ok) {
