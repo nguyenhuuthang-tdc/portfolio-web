@@ -6,12 +6,7 @@ import { ViewTracker } from "./ViewTracker";
 import { mediaUrl } from "@/lib/media";
 import { CmsMarkdown } from "@/components/article/CmsMarkdown";
 
-export const revalidate = 3600;
-
-export async function generateStaticParams() {
-  const { posts } = await getBlogPosts({ limit: 100 });
-  return posts.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

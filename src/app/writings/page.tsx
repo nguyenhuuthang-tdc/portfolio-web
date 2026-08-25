@@ -5,7 +5,7 @@ import { BlogCategory } from "@/types/api";
 import { SectionReveal } from "@/components/ui/SectionReveal";
 import { WritingsFeed } from "@/components/ui/WritingsFeed";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Writings — Winphony",

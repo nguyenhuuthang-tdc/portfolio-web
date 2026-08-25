@@ -71,9 +71,7 @@ export async function getBlogPosts(params?: {
         limit: String(params?.limit ?? 10),
         ...(params?.category ? { category: params.category } : {}),
       });
-      const res = await apiFetch<PaginatedResponse<Blog>>(`/api/blogs?${qs}`, {
-        revalidate: 3600,
-      });
+      const res = await apiFetch<PaginatedResponse<Blog>>(`/api/blogs?${qs}`);
 
       return {
         posts: res.data,
@@ -108,8 +106,7 @@ export async function getBlogDetail(slug: string): Promise<BlogDetail | null> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: Blog }>(
-        `/api/blogs/slug/${encodeURIComponent(slug)}`,
-        { revalidate: 3600 }
+        `/api/blogs/slug/${encodeURIComponent(slug)}`
       );
       return { post: res.data, MdxContent: null };
     } catch {
@@ -134,8 +131,7 @@ export async function getBlogCategories(): Promise<BlogCategory[]> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: BlogCategory[] }>(
-        '/api/blogs/categories',
-        { revalidate: 86400 }
+        '/api/blogs/categories'
       );
       return res.data;
     } catch {
