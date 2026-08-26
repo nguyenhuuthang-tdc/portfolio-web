@@ -13,9 +13,12 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Env file is a BuildKit secret (not a layer, not pushed). Next loads
-# .env.production for this build only; wipe it and any copy into .next.
+# .env.production for this build only. BuildKit does not include secret
+# contents in its cache key, so BUILD_ENV_SHA must change when the env changes.
+ARG BUILD_ENV_SHA=local
 RUN --mount=type=secret,id=web_env,target=/run/secrets/web_env \
-    cp /run/secrets/web_env .env.production \
+    test -n "${BUILD_ENV_SHA}" \
+    && cp /run/secrets/web_env .env.production \
     && npm run build \
     && rm -f .env .env.local .env.production .env.development \
       .env.development.local .env.production.local \
