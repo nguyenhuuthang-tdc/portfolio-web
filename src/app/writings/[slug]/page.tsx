@@ -5,6 +5,15 @@ import { Blog } from "@/types/api";
 import { ViewTracker } from "./ViewTracker";
 import { mediaUrl } from "@/lib/media";
 import { CmsMarkdown } from "@/components/article/CmsMarkdown";
+import type { Metadata } from "next";
+import {
+  absoluteUrl,
+  OWNER_NAME,
+  serializeJsonLd,
+  SITE_NAME,
+  SITE_URL,
+  socialImageUrl,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -13,16 +22,47 @@ export async function generateStaticParams() {
   return posts.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogBySlug(slug);
-  if (!post) return {};
+  if (!post) {
+    return {
+      title: "Writing not found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const url = absoluteUrl(`/writings/${post.slug}`);
+  const image = socialImageUrl(mediaUrl(post.thumbnail));
+  const description = post.excerpt ?? `Read ${post.title} on ${SITE_NAME}.`;
+
   return {
-    title: `${post.title} — Winphony`,
-    description: post.excerpt ?? undefined,
-    openGraph: post.thumbnail
-      ? { images: [{ url: mediaUrl(post.thumbnail) ?? post.thumbnail }] }
-      : undefined,
+    title: post.title,
+    description,
+    authors: [{ name: OWNER_NAME, url: SITE_URL }],
+    alternates: { canonical: url },
+    openGraph: {
+      title: post.title,
+      description,
+      url,
+      siteName: SITE_NAME,
+      type: "article",
+      publishedTime: post.publishedAt ?? undefined,
+      modifiedTime: post.updatedAt,
+      authors: [OWNER_NAME],
+      tags: post.categories.map((category) => category.name),
+      images: [{ url: image, alt: post.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: [image],
+    },
   };
 }
 
@@ -78,6 +118,24 @@ export default async function WritingDetailPage({
   const detail = await getBlogDetail(slug);
   if (!detail) notFound();
   const { post, MdxContent } = detail;
+  const articleUrl = absoluteUrl(`/writings/${post.slug}`);
+  const articleImage = socialImageUrl(mediaUrl(post.thumbnail));
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${articleUrl}#article`,
+    headline: post.title,
+    description: post.excerpt ?? undefined,
+    image: articleImage,
+    datePublished: post.publishedAt ?? post.createdAt,
+    dateModified: post.updatedAt,
+    articleSection: post.categories.map((category) => category.name),
+    mainEntityOfPage: articleUrl,
+    url: articleUrl,
+    author: { "@id": `${SITE_URL}/#person` },
+    publisher: { "@id": `${SITE_URL}/#person` },
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+  };
 
   // Related posts: same categories, excluding current
   const categorySlug = post.categories[0]?.slug;
@@ -100,6 +158,10 @@ export default async function WritingDetailPage({
 
   return (
     <div className="min-h-screen pt-20 pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
+      />
       {!MdxContent && <ViewTracker blogId={post.id} />}
 
       {/* Hero / Thumbnail */}

@@ -208,33 +208,30 @@ export function HeroSection({ bio }: HeroSectionProps) {
         </div>
 
         {/* Headline */}
-        <div
+        <motion.h1
           className="lg:flex lg:items-baseline lg:gap-[0.3em] xl:block"
           style={{ fontFamily: "var(--font-display, 'Space Grotesk')" }}
+          initial={{ opacity: 0, y: 36 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
         >
-          <motion.h1
+          <span
             className="block font-extrabold leading-[0.92] tracking-tight mb-2 lg:mb-0 xl:mb-2 text-[clamp(3.5rem,12vw,6rem)] lg:text-[clamp(3rem,5.5vw,4.5rem)] xl:text-[clamp(5rem,5vw,9.5rem)]"
             style={{
               letterSpacing: "-0.045em",
               color: "var(--hero-h1-color)",
               fontFamily: "var(--font-display, 'Space Grotesk')",
             }}
-            initial={{ opacity: 0, y: 36 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           >
             Building
-          </motion.h1>
-          <motion.h1
+          </span>
+          <span
             className="block font-extrabold leading-[0.92] tracking-tight text-[clamp(3.5rem,12vw,6rem)] lg:text-[clamp(3rem,5.5vw,4.5rem)] xl:text-[clamp(5rem,5vw,9.5rem)] hero-h2"
             style={{ letterSpacing: "-0.045em" }}
-            initial={{ opacity: 0, y: 36 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
           >
             the web.
-          </motion.h1>
-        </div>
+          </span>
+        </motion.h1>
 
         {/* Name + role */}
         <motion.div

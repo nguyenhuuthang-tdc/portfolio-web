@@ -8,8 +8,15 @@ import { GalaxyBackground } from "@/components/three/GalaxyBackground";
 import { getAboutSection, getSkills } from "@/lib/content/about";
 import { getProjects } from "@/lib/content/projects";
 import { getBlogPosts } from "@/lib/content/blogs";
+import type { Metadata } from "next";
+import { DEFAULT_DESCRIPTION } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  description: DEFAULT_DESCRIPTION,
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const [bio, aboutMe, skills, projects, { posts }] = await Promise.all([

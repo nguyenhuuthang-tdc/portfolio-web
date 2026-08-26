@@ -4,7 +4,7 @@ import { apiFetch } from '@/lib/api/client';
 const STATIC_SECTIONS: Record<string, string> = {
   hero: 'Software Developer passionate about building modern, user-centric web experiences.',
   about_me:
-    'I am a full-stack developer with a love for clean code, great UX, and continuous learning. When not coding, I play guitar and think about life.',
+    "Full-stack developer with a strong passion for elegant logic, pixel-perfect interfaces, and code that doesn't break at 2 AM. Driven by continuous learning, continuous integration, and continuous curiosity.",
   experience: '',
 };
 

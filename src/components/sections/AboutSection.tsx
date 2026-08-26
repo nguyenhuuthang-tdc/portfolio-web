@@ -76,7 +76,7 @@ export function AboutSection({ content }: AboutSectionProps) {
                 {paragraphs.map((para, i) => (
                   <p
                     key={i}
-                    className="text-neutral-600 dark:text-neutral-400 leading-relaxed"
+                    className="text-neutral-700 dark:text-neutral-300 leading-relaxed"
                   >
                     {para}
                   </p>
@@ -86,7 +86,7 @@ export function AboutSection({ content }: AboutSectionProps) {
               {/* Social links */}
               <div className="flex items-center gap-3 mt-8">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/nguyenhuuthang-tdc"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl glass-card hover:bg-white/80 dark:hover:bg-white/8 transition-all duration-200 hover:scale-105"
@@ -95,7 +95,7 @@ export function AboutSection({ content }: AboutSectionProps) {
                   GitHub
                 </a>
                 <a
-                  href="https://linkedin.com"
+                  href="https://www.linkedin.com/in/thang-nguyen-dev"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl glass-card hover:bg-white/80 dark:hover:bg-white/8 transition-all duration-200 hover:scale-105"

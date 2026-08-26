@@ -6,6 +6,16 @@ import {
   getProjects,
 } from "@/lib/content/projects";
 import { CmsMarkdown } from "@/components/article/CmsMarkdown";
+import type { Metadata } from "next";
+import { mediaUrl } from "@/lib/media";
+import {
+  absoluteUrl,
+  OWNER_NAME,
+  serializeJsonLd,
+  SITE_NAME,
+  SITE_URL,
+  socialImageUrl,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -14,13 +24,42 @@ export async function generateStaticParams() {
   return projects.filter((p) => p.hasDetail).map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
-  if (!project) return {};
+  if (!project) {
+    return {
+      title: "Project not found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const url = absoluteUrl(`/projects/${project.slug}`);
+  const description = project.description ?? `Explore ${project.title}, a project by ${OWNER_NAME}.`;
+  const image = socialImageUrl(mediaUrl(project.thumbnail));
+
   return {
-    title: `${project.title} — Winphony`,
-    description: project.description ?? undefined,
+    title: project.title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: project.title,
+      description,
+      url,
+      siteName: SITE_NAME,
+      type: "website",
+      images: [{ url: image, alt: project.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description,
+      images: [image],
+    },
   };
 }
 
@@ -33,9 +72,27 @@ export default async function ProjectDetailPage({
   const project = await getProjectBySlug(slug);
   if (!project || !project.hasDetail) notFound();
   const ProjectContent = await getProjectMdxComponent(slug);
+  const projectUrl = absoluteUrl(`/projects/${project.slug}`);
+  const projectJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "@id": `${projectUrl}#project`,
+    name: project.title,
+    description: project.description ?? undefined,
+    url: projectUrl,
+    image: socialImageUrl(mediaUrl(project.thumbnail)),
+    codeRepository: project.githubUrl ?? undefined,
+    programmingLanguage: project.techStack ?? undefined,
+    author: { "@id": `${SITE_URL}/#person` },
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+  };
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(projectJsonLd) }}
+      />
       <div className="max-w-3xl mx-auto">
         {/* Back */}
         <Link

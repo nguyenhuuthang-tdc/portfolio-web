@@ -4,12 +4,28 @@ import { getBlogPosts, getBlogCategories } from "@/lib/content/blogs";
 import { BlogCategory } from "@/types/api";
 import { SectionReveal } from "@/components/ui/SectionReveal";
 import { WritingsFeed } from "@/components/ui/WritingsFeed";
+import type { Metadata } from "next";
+import { OWNER_NAME } from "@/lib/seo";
 
 export const revalidate = 3600;
 
-export const metadata = {
-  title: "Writings — Winphony",
+export const metadata: Metadata = {
+  title: "Writings",
   description: "Thoughts on tech, coding, guitar, and life.",
+  alternates: { canonical: "/writings" },
+  openGraph: {
+    title: `Writings by ${OWNER_NAME}`,
+    description: "Thoughts on tech, coding, guitar, and life.",
+    url: "/writings",
+    type: "website",
+    images: ["/opengraph-image"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Writings by ${OWNER_NAME}`,
+    description: "Thoughts on tech, coding, guitar, and life.",
+    images: ["/opengraph-image"],
+  },
 };
 
 function WritingsSkeleton() {
