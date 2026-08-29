@@ -66,12 +66,11 @@ export async function getBlogPosts(params?: {
   if (process.env.API_URL) {
     try {
       const qs = new URLSearchParams({
-        status: 'published',
         page: String(params?.page ?? 1),
         limit: String(params?.limit ?? 10),
         ...(params?.category ? { category: params.category } : {}),
       });
-      const res = await apiFetch<PaginatedResponse<Blog>>(`/api/blogs?${qs}`, {
+      const res = await apiFetch<PaginatedResponse<Blog>>(`/api/v1/public/blogs?${qs}`, {
         revalidate: 3600,
       });
 
@@ -108,7 +107,7 @@ export async function getBlogDetail(slug: string): Promise<BlogDetail | null> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: Blog }>(
-        `/api/blogs/slug/${encodeURIComponent(slug)}`,
+        `/api/v1/public/blogs/slug/${encodeURIComponent(slug)}`,
         { revalidate: 3600 }
       );
       return { post: res.data, MdxContent: null };
@@ -134,7 +133,7 @@ export async function getBlogCategories(): Promise<BlogCategory[]> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: BlogCategory[] }>(
-        '/api/blogs/categories',
+        '/api/v1/public/blogs/categories',
         { revalidate: 86400 }
       );
       return res.data;
@@ -149,7 +148,7 @@ export async function getBlogCategories(): Promise<BlogCategory[]> {
 export async function recordBlogView(blogId: number): Promise<void> {
   if (!process.env.NEXT_PUBLIC_API_URL) return;
   try {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${blogId}/view`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/public/blogs/${blogId}/view`, {
       method: 'POST',
     });
   } catch {

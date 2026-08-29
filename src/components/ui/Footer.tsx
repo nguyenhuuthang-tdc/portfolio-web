@@ -30,7 +30,7 @@ export function Footer() {
       <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-2/3 -translate-x-1/2 rounded-full bg-violet-500/[0.06] blur-3xl dark:bg-violet-500/[0.08]" />
 
       <div className="relative mx-auto max-w-6xl py-4 sm:py-6">
-        <div className="grid gap-10 dark:border-neutral-800 sm:grid-cols-[minmax(0,1.4fr)_minmax(260px,0.6fr)] sm:items-end">
+        <div className="grid gap-10 dark:border-neutral-800 grid-cols-[minmax(0,1.4fr)_minmax(260px,0.6fr)] sm:items-end">
           <div className="max-w-xl self-center">
             <Link
               href="/"
@@ -46,8 +46,8 @@ export function Footer() {
             </Link>
           </div>
 
-          <div className="sm:justify-self-end">
-            <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-600 dark:text-neutral-400">
+          <div className="justify-self-end">
+            <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-600 dark:text-neutral-400 text-right sm:text-left">
               Find me online
             </p>
             <div className="flex flex-wrap gap-2.5">
@@ -66,7 +66,7 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-5 flex flex-col gap-2 border-t border-neutral-200/70 pt-4 text-sm text-neutral-600 dark:border-neutral-800/80 dark:text-neutral-400 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-5 flex flex-col gap-2 border-t border-neutral-200/70 pt-4 text-sm text-neutral-600 dark:border-neutral-800/80 dark:text-neutral-400 sm:flex-row items-center sm:justify-between">
           <p>
             &copy; {new Date().getFullYear()} Winphony. All rights reserved
           </p>
