@@ -41,7 +41,7 @@ export async function getAboutSections(): Promise<AboutSection[]> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: AboutSection[] }>(
-        '/api/about/sections',
+        '/api/v1/public/about/sections',
         { revalidate: 86400 }
       );
       return res.data;
@@ -62,7 +62,7 @@ export async function getAboutSection(key: string): Promise<string> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: AboutSection }>(
-        `/api/about/sections/${key}`,
+        `/api/v1/public/about/sections/${key}`,
         { revalidate: 86400 }
       );
       return res.data.content;
@@ -77,7 +77,7 @@ export async function getSkills(): Promise<Skill[]> {
   if (process.env.API_URL) {
     try {
       const res = await apiFetch<{ success: boolean; data: Skill[] }>(
-        '/api/about/skills',
+        '/api/v1/public/about/skills',
         { revalidate: 86400 }
       );
       return res.data;
