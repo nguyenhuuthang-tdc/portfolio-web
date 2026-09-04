@@ -17,7 +17,7 @@ services:
       HOSTNAME: 0.0.0.0
       PORT: ${PORT:-3000}
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "127.0.0.1:${PORT:-3000}:${PORT:-3000}"
 
 secrets:
   web_env:
