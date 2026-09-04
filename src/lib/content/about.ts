@@ -1,5 +1,6 @@
 import { AboutSection, Skill } from '@/types/api';
 import { apiFetch } from '@/lib/api/client';
+import { cacheTags } from '@/lib/cache/tags';
 
 const STATIC_SECTIONS: Record<string, string> = {
   hero: 'Software Developer passionate about building modern, user-centric web experiences.',
@@ -42,7 +43,10 @@ export async function getAboutSections(): Promise<AboutSection[]> {
     try {
       const res = await apiFetch<{ success: boolean; data: AboutSection[] }>(
         '/api/v1/public/about/sections',
-        { revalidate: 86400 }
+        {
+          revalidate: 86400,
+          tags: [cacheTags.about],
+        }
       );
       return res.data;
     } catch {
@@ -63,7 +67,10 @@ export async function getAboutSection(key: string): Promise<string> {
     try {
       const res = await apiFetch<{ success: boolean; data: AboutSection }>(
         `/api/v1/public/about/sections/${key}`,
-        { revalidate: 86400 }
+        {
+          revalidate: 86400,
+          tags: [cacheTags.about, cacheTags.aboutSection(key)],
+        }
       );
       return res.data.content;
     } catch {
@@ -78,7 +85,10 @@ export async function getSkills(): Promise<Skill[]> {
     try {
       const res = await apiFetch<{ success: boolean; data: Skill[] }>(
         '/api/v1/public/about/skills',
-        { revalidate: 86400 }
+        {
+          revalidate: 86400,
+          tags: [cacheTags.skills],
+        }
       );
       return res.data;
     } catch {

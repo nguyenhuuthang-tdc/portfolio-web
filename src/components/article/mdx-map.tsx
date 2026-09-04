@@ -76,7 +76,7 @@ export const articleComponents = {
     </h3>
   ),
   p: ({ children }) => (
-    <p className="mb-5 leading-7 text-neutral-600 dark:text-neutral-100">
+    <p className="mb-5 leading-7 text-neutral-800 dark:text-neutral-100">
       {children}
     </p>
   ),

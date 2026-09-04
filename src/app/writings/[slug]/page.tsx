@@ -188,7 +188,7 @@ export default async function WritingDetailPage({
               {/* Back */}
               <Link
                 href="/writings"
-                className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 mb-6 transition-colors mt-4"
+                className="inline-flex items-center gap-1.5 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 mb-6 transition-colors mt-4"
               >
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path d="M19 12H5M5 12l7 7M5 12l7-7" />
@@ -218,7 +218,7 @@ export default async function WritingDetailPage({
                 </h1>
 
                 {post.excerpt && (
-                  <p className="text-lg text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
+                  <p className="text-lg text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4">
                     {post.excerpt}
                   </p>
                 )}
