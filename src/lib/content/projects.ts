@@ -3,6 +3,7 @@ import path from 'path';
 import type { ComponentType } from 'react';
 import type { Project } from '@/types/api';
 import { apiFetch } from '@/lib/api/client';
+import { cacheTags } from '@/lib/cache/tags';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/projects');
 
@@ -48,6 +49,7 @@ export async function getProjects(): Promise<Project[]> {
     try {
       const res = await apiFetch<{ success: boolean; data: Project[] }>('/api/v1/public/projects', {
         revalidate: 3600,
+        tags: [cacheTags.projects],
       });
       return res.data;
     } catch {
@@ -63,7 +65,10 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
     try {
       const res = await apiFetch<{ success: boolean; data: Project }>(
         `/api/v1/public/projects/slug/${encodeURIComponent(slug)}`,
-        { revalidate: 3600 }
+        {
+          revalidate: 3600,
+          tags: [cacheTags.projects, cacheTags.project(slug)],
+        }
       );
       return res.data;
     } catch {

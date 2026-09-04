@@ -3,6 +3,7 @@ import path from 'path';
 import type { ComponentType } from 'react';
 import type { Blog, BlogCategory, PaginatedResponse } from '@/types/api';
 import { apiFetch } from '@/lib/api/client';
+import { cacheTags } from '@/lib/cache/tags';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/writings');
 
@@ -72,6 +73,7 @@ export async function getBlogPosts(params?: {
       });
       const res = await apiFetch<PaginatedResponse<Blog>>(`/api/v1/public/blogs?${qs}`, {
         revalidate: 3600,
+        tags: [cacheTags.blogs],
       });
 
       return {
@@ -108,7 +110,10 @@ export async function getBlogDetail(slug: string): Promise<BlogDetail | null> {
     try {
       const res = await apiFetch<{ success: boolean; data: Blog }>(
         `/api/v1/public/blogs/slug/${encodeURIComponent(slug)}`,
-        { revalidate: 3600 }
+        {
+          revalidate: 3600,
+          tags: [cacheTags.blogs, cacheTags.blog(slug)],
+        }
       );
       return { post: res.data, MdxContent: null };
     } catch {
@@ -134,7 +139,10 @@ export async function getBlogCategories(): Promise<BlogCategory[]> {
     try {
       const res = await apiFetch<{ success: boolean; data: BlogCategory[] }>(
         '/api/v1/public/blogs/categories',
-        { revalidate: 86400 }
+        {
+          revalidate: 86400,
+          tags: [cacheTags.blogCategories],
+        }
       );
       return res.data;
     } catch {
